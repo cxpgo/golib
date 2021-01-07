@@ -1,0 +1,39 @@
+# This is base config
+
+[base]
+    debug_mode="debug"
+    time_location="Asia/Shanghai"
+
+[log]
+    log_level = "trace"         #日志打印最低级别
+    [log.file_writer]           #文件写入配置
+        on = true
+        log_path = "./go_logs/golang_common.inf.log"
+        rotate_log_path = "./go_logs/golang_common.inf.log"
+        wf_log_path = "./go_logs/golang_common.wf.log"
+        rotate_wf_log_path = "./go_logs/golang_common.wf.log"
+    [log.console_writer]        #工作台输出
+        on = true
+        color = true
+    [log.rotate_config]           #lumberjack 日志文件滚动配置
+        rotate_on = true
+        common_path = "./go_logs/go_common.log"     #日志文件路径
+        error_path = "./go_logs/go_error.log"     #日志文件路径
+        sql_path = "./go_logs/go_sql.log"     #日志文件路径
+        max_size = 1      #每个日志文件保存的最大尺寸 单位：M
+        max_backups = 30    #日志文件最多保存多少个备份
+        max_age = 14        #文件最多保存多少天
+        compress = true     #是否压缩
+        localTime = true    #时区
+    [log.zap_config]           #zapcore.EncoderConfig
+        zap_on = true
+        development = false #开启开发模式，堆栈跟踪
+        stdout = false   #是否输入到标准输出（控制台）
+        level = "info"  #debug,info,warn,error,dpanic,panic,fatal
+        time_key = "time"     #日志文件路径
+        level_key = "level"     #日志文件路径
+        name_key = "logger"     #日志文件路径
+        caller_key = "linenum"      #每个日志文件保存的最大尺寸 单位：M
+        message_key = "msg"    #日志文件最多保存多少个备份
+        stack_trace_key = "traceid"        #文件最多保存多少天
+

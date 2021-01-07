@@ -1,0 +1,46 @@
+#golib config
+[system]
+
+[log]
+    [log.rotate]           #lumberjack 日志文件滚动配置
+        on = true
+        file_name=""        #滚动文件地址
+        max_size = 128      #每个日志文件保存的最大尺寸 单位：M
+        max_backups = 30    #日志文件最多保存多少个备份
+        max_age = 14        #文件最多保存多少天
+        compress = true     #是否压缩
+        localTime = true    #时区
+
+    [log.zap]           #zap 日志配置
+        on = true
+        main_path = "./logs/golib_main.log"     #日志文件路径
+        error_path = "./logs/golib_error.log"     #日志文件路径
+        development = false #开启开发模式，堆栈跟踪
+        stdout = true   #是否输入到标准输出（控制台）
+        level = "info"  #debug,info,warn,error,dpanic,panic,fatal
+        time_key = "time"
+        level_key = "level"
+        name_key = "logger"
+        caller_key = "linenum"
+        message_key = "msg"
+        stack_trace_key = "traceid"
+
+[mysql]
+    [mysql.default]
+        #link = "root:Cxp!@#123@tcp(47.100.244.199:3306)/go_gateway?charset=utf8mb4&parseTime=true&loc=Local"
+        host = "47.100.244.199"
+        port = 3306
+        config= 'charset=utf8mb4&parseTime=true&loc=Local'
+        username= 'root'
+        password= 'Cxp!@#123'
+        db_name= 'football'
+        max_open_conn = 200         #最大连接数
+        max_idle_conn = 20         #空闲连接数
+        max_conn_life_time = 30    #连接超时
+
+[redis]
+    [redis.default]
+        host = "47.100.244.199"
+        port = "6379"
+        password = "123456"
+        db = 0
