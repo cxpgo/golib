@@ -116,6 +116,7 @@ func InitLog(cfg model.Log) {
 	zapSugarLog.Info("===>Log Init Successful<===")
 }
 
+var Log *golibLog
 type golibLog struct {
 }
 
@@ -128,15 +129,6 @@ func (l *golibLog) GetLog() *zap.Logger {
 
 func (l *golibLog) GetSugarLog() *zap.SugaredLogger {
 	return zapSugarLog
-}
-
-func (l *golibLog) Close() {
-	if zapLog != nil {
-		zapLog.Sync()
-	}
-	if zapSugarLog != nil {
-		zapSugarLog.Sync()
-	}
 }
 
 func (l *golibLog) Debug(args ...interface{}) {
@@ -226,4 +218,13 @@ func parseTraceToSugar(trace *TraceContext) []interface{} {
 // 自定义日志输出时间格式
 func CustomTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(t.Format("2006/01/02-15:04:05.000"))
+}
+
+func CloseLog() {
+	if zapLog != nil {
+		zapLog.Sync()
+	}
+	if zapSugarLog != nil {
+		zapSugarLog.Sync()
+	}
 }

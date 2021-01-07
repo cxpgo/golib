@@ -10,7 +10,8 @@ import (
 	"gorm.io/gorm/logger"
 	"time"
 )
-
+var GORMMapPool map[string]*gorm.DB
+var GORMDefaultPool *gorm.DB
 func InitGormPool(dbConfList map[string]*model.MySQLConf) error {
 	//fmt.Printf("gorm %+v",dbConfList)
 	GORMMapPool = map[string]*gorm.DB{}

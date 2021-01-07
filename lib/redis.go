@@ -3,13 +3,15 @@ package lib
 import (
 	"encoding/json"
 	"errors"
-	"reflect"
-	"github.com/gomodule/redigo/redis"
 	"fmt"
 	"github.com/cxpgo/golib/model"
+	"github.com/gomodule/redigo/redis"
+	"reflect"
 	"time"
 )
 
+
+var RedisMapPool map[string]*Redis
 // Redis client.
 type Redis struct {
 	pool *redis.Pool // Underlying connection pool.
@@ -40,19 +42,21 @@ var (
 //pools = gmap.NewStrAnyMap(true)
 )
 
-func InitRedis(config *model.RedisConf) {
-	gRedis = New(config)
+func InitRedis(configs map[string]*model.RedisConf) {
+	RedisMapPool = map[string]*Redis{}
+	for confName,conf := range configs{
+		redis := NewRedis(conf)
+		RedisMapPool[confName] = redis
+	}
+	SetDefaultRedis("default")
 	_, err := gRedis.Do("Ping")
 	if err == nil {
 		Log.Info("===>Redis Init Successful<===")
 	}
 }
 
-func New(config *model.RedisConf) *Redis {
-	//fmt.Printf("redis_conf=%+v\n",config)
-	// The MaxIdle is the most important attribute of the connection pool.
-	// Only if this attribute is set, the created connections from client
-	// can not exceed the limit of the server.
+func NewRedis(config *model.RedisConf) *Redis {
+
 	if config.MaxIdle == 0 {
 		config.MaxIdle = REDIS_POOL_MAX_IDLE
 	}
@@ -116,6 +120,18 @@ func New(config *model.RedisConf) *Redis {
 
 }
 
+func GetRedisByName(name string) *Redis{
+	return RedisMapPool[name]
+}
+func SetDefaultRedis(name string){
+	gRedis = RedisMapPool[name]
+}
+
+func CloseRedis()  {
+	for _,redisPool := range RedisMapPool{
+		redisPool.Close()
+	}
+}
 // Do sends a command to the server and returns the received reply.
 // Do automatically get a connection from pool, and close it when the reply received.
 // It does not really "close" the connection, but drops it back to the connection pool.
@@ -134,12 +150,6 @@ func (r *Redis) DoWithTimeout(timeout time.Duration, commandName string, args ..
 }
 
 func (r *Redis) Close() error {
-	//if r.group != "" {
-	//	// If it is an instance object,
-	//	// it needs to remove it from the instance Map.
-	//	instances.Remove(r.group)
-	//}
-	//pools.Remove(fmt.Sprintf("%v", r.config))
 	return r.pool.Close()
 }
 
@@ -202,138 +212,4 @@ func (c *Conn) DoWithTimeout(timeout time.Duration, commandName string, args ...
 	return c.do(timeout, commandName, args...)
 }
 
-/*func RedisConnFactory(name string) (redis.Conn, error) {
-	if ConfRedisMap != nil && ConfRedisMap.List != nil {
-		for confName, cfg := range ConfRedisMap.List {
-			if name == confName {
-				randHost := cfg.ProxyList[rand.Intn(len(cfg.ProxyList))]
-				if cfg.ConnTimeout == 0 {
-					cfg.ConnTimeout = 50
-				}
-				if cfg.ReadTimeout == 0 {
-					cfg.ReadTimeout = 100
-				}
-				if cfg.WriteTimeout == 0 {
-					cfg.WriteTimeout = 100
-				}
-				c, err := redis.Dial(
-					"tcp",
-					randHost,
-					redis.DialConnectTimeout(time.Duration(cfg.ConnTimeout)*time.Millisecond),
-					redis.DialReadTimeout(time.Duration(cfg.ReadTimeout)*time.Millisecond),
-					redis.DialWriteTimeout(time.Duration(cfg.WriteTimeout)*time.Millisecond))
-				if err != nil {
-					return nil, err
-				}
-				if cfg.Password != "" {
-					if _, err := c.Do("AUTH", cfg.Password); err != nil {
-						c.Close()
-						return nil, err
-					}
-				}
-				if cfg.Db != 0 {
-					if _, err := c.Do("SELECT", cfg.Db); err != nil {
-						c.Close()
-						return nil, err
-					}
-				}
-				return c, nil
-			}
-		}
-	}
-	return nil, errors.New("create redis conn fail")
-}
 
-func RedisLogDo(trace *TraceContext, c redis.Conn, commandName string, args ...interface{}) (interface{}, error) {
-	startExecTime := time.Now()
-	reply, err := c.Do(commandName, args...)
-
-	endExecTime := time.Now()
-	if err != nil {
-		trace.LogTag = "_com_redis_failure"
-		m := map[string]interface{}{
-			"method":    commandName,
-			"err":       err,
-			"bind":      args,
-			"proc_time": fmt.Sprintf("%fs", endExecTime.Sub(startExecTime).Seconds()),
-		}
-		Log.Errorw(m,trace)
-		//Log.TagError(trace, "_com_redis_failure", map[string]interface{}{
-		//	"method":    commandName,
-		//	"err":       err,
-		//	"bind":      args,
-		//	"proc_time": fmt.Sprintf("%fs", endExecTime.Sub(startExecTime).Seconds()),
-		//})
-	} else {
-		replyStr, _ := redis.String(reply, nil)
-		trace.LogTag = "_com_redis_success"
-		m := map[string]interface{}{
-			"method":    commandName,
-			"bind":      args,
-			"reply":     replyStr,
-			"proc_time": fmt.Sprintf("%fs", endExecTime.Sub(startExecTime).Seconds()),
-		}
-		Log.Infow(m,trace)
-		//Log.Info(replyStr)
-		//Log.TagInfo(trace, "_com_redis_success", map[string]interface{}{
-		//	"method":    commandName,
-		//	"bind":      args,
-		//	"reply":     replyStr,
-		//	"proc_time": fmt.Sprintf("%fs", endExecTime.Sub(startExecTime).Seconds()),
-		//})
-	}
-	return reply, err
-}
-//通过配置 执行redis
-func RedisConfDo(trace *TraceContext, name string, commandName string, args ...interface{}) (interface{}, error) {
-	c, err := RedisConnFactory(name)
-	if err != nil {
-		trace.LogTag = "_com_redis_failure"
-		m := map[string]interface{}{
-			"method": commandName,
-			"err":    errors.New("RedisConnFactory_error:" + name),
-			"bind":   args,
-		}
-		Log.Errorw(m,trace)
-
-		//Log.TagError(trace, "_com_redis_failure", map[string]interface{}{
-		//	"method": commandName,
-		//	"err":    errors.New("RedisConnFactory_error:" + name),
-		//	"bind":   args,
-		//})
-		return nil, err
-	}
-	defer c.Close()
-
-	startExecTime := time.Now()
-	reply, err := c.Do(commandName, args...)
-	endExecTime := time.Now()
-	if err != nil {
-		trace.LogTag = "_com_redis_failure"
-		m := map[string]interface{}{
-				"method":    commandName,
-				"err":       err,
-				"bind":      args,
-				"proc_time": fmt.Sprintf("%fs", endExecTime.Sub(startExecTime).Seconds()),
-		}
-		Log.Errorw(m,trace)
-	} else {
-		replyStr, _ := redis.String(reply, nil)
-		trace.LogTag = "_com_redis_success"
-		m := map[string]interface{}{
-				"method":    commandName,
-				"bind":      args,
-				"reply":     replyStr,
-				"proc_time": fmt.Sprintf("%fs", endExecTime.Sub(startExecTime).Seconds()),
-		}
-		Log.Infow(m,trace)
-		//Log.TagInfo(trace, "_com_redis_success", map[string]interface{}{
-		//	"method":    commandName,
-		//	"bind":      args,
-		//	"reply":     replyStr,
-		//	"proc_time": fmt.Sprintf("%fs", endExecTime.Sub(startExecTime).Seconds()),
-		//})
-	}
-	return reply, err
-}
-*/
