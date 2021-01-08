@@ -49,28 +49,3 @@
         port = "6379"
         password = "123456"
         db = 0
-
-[jwt]
-  signing-key='ginf'
-# captcha configuration
-[captcha]
-    key-long= 6
-    img-width=240
-    img-height= 80
-
-# casbin configuration
-[casbin]
-  model-path='./resource/rbac_model.conf'
-# email configuration
-[email]
-  to= 'xxx@qq.com'
-  port= 465
-  from='xxx@163.com'
-  host='smtp.163.com'
-  is-ssl=true
-  secret='xxx'
-  nickname='test'
-
-  # local configuration
-[local]
-    path='uploads/file'
