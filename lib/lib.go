@@ -1,28 +1,29 @@
 package lib
 
 import (
-	"github.com/cxpgo/golib/model"
-	"github.com/spf13/viper"
+	"github.com/cxpgo/golib/model/config"
 )
+
 //definition common type
 type Map = map[string]interface{}
 
-//definition global var
-var gConfig model.Config
-var gVP     *viper.Viper
-var gRedis  *Redis
+var (
+	GConfig config.Config
+	GRedis  *Redis
+)
 
 //Init config log mysql gorm redis
-func Init(path ...string)  {
-	InitConfig(path...)
-	InitLog(gConfig.Log)
-	InitDBPool(gConfig.MySqlConfList)
-	InitGormPool(gConfig.MySqlConfList)
-	InitRedis(gConfig.RedisConfList)
+func Init(path ...string) {
+	InitGolibConfig(path...)
+	InitLog(GConfig.Log)
+	InitDBPool(GConfig.MySqlConfList)
+	InitGormPool(GConfig.MySqlConfList)
+	InitRedis(GConfig.RedisConfList)
 }
 
+
 //Close all
-func Destroy()  {
+func Destroy() {
 	CloseLog()
 	CloseDB()
 	CloseRedis()

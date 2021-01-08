@@ -19,7 +19,7 @@ import (
 
 func Test_Database(t *testing.T) {
 	databaseContent := gfile.GetContents(
-		gdebug.TestDataPath("database", "config.toml"),
+		gdebug.TestDataPath("database", "golibConfig.toml"),
 	)
 	gtest.C(t, func(t *gtest.T) {
 		var err error
@@ -28,7 +28,7 @@ func Test_Database(t *testing.T) {
 		t.Assert(err, nil)
 		defer gfile.Remove(dirPath)
 
-		name := "config.toml"
+		name := "golibConfig.toml"
 		err = gfile.PutContents(gfile.Join(dirPath, name), databaseContent)
 		t.Assert(err, nil)
 

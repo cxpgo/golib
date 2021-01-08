@@ -2,28 +2,9 @@ package test
 
 import (
 	"fmt"
-	"log"
-	"testing"
-	"time"
-
 	"github.com/cxpgo/golib/lib"
-	//"github.com/iiswho666/gorm"
-	"gorm.io/gorm"
+	"testing"
 )
-
-type Test1 struct {
-	Id        int64     `json:"id" gorm:"primary_key"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
-func (f *Test1) Table() string {
-	return "test1"
-}
-
-func (f *Test1) DB() *gorm.DB {
-	return lib.GORMDefaultPool
-}
 
 var (
 	createTableSQL = "CREATE TABLE `test1` (`id` int(12) unsigned NOT NULL AUTO_INCREMENT" +
@@ -37,9 +18,11 @@ var (
 	rollbackSQL  = "rollback;"
 )
 
-func TTest_DBPool(t *testing.T) {
-	SetUp()
-
+func Test_DBPool(t *testing.T) {
+	//os.Chdir("..")
+	//fmt.Println(os.Getwd())
+	testInitOnce()
+	lib.InitDBPool(lib.GConfig.MySqlConfList)
 	//获取链接池
 	dbpool, err := lib.GetDBPool("default")
 	if err != nil {
@@ -53,7 +36,7 @@ func TTest_DBPool(t *testing.T) {
 
 	//创建表
 	if _, err := lib.DBPoolLogQuery(trace, dbpool, createTableSQL); err != nil {
-		log.Printf("[INFO] %s\n", " 创建表")
+		lib.Log.Printf("[INFO] %s\n", " 创建表")
 		lib.DBPoolLogQuery(trace, dbpool, rollbackSQL)
 		t.Fatal(err)
 	}
@@ -94,56 +77,15 @@ func TTest_DBPool(t *testing.T) {
 	fmt.Println("------------------------------------------------------------------------")
 	fmt.Println("finish read table ", table_name, "")
 
-	////删除表
-	//if _, err := lib.DBPoolLogQuery(trace, dbpool, dropTableSQL); err != nil {
-	//	lib.DBPoolLogQuery(trace, dbpool, rollbackSQL)
-	//	t.Fatal(err)
-	//}
+	//删除表
+	if _, err := lib.DBPoolLogQuery(trace, dbpool, dropTableSQL); err != nil {
+		lib.DBPoolLogQuery(trace, dbpool, rollbackSQL)
+		t.Fatal(err)
+	}
 
 	//提交事务
 	lib.DBPoolLogQuery(trace, dbpool, commitSQL)
-	TearDown()
-}
 
-func Test_GORM(t *testing.T) {
-	SetUp()
+	//Close()
 
-	//获取链接池
-	dbpool, err := lib.GetGormPool("default")
-	if err != nil {
-		t.Fatal(err)
-	}
-	db := dbpool.Begin()
-	//traceCtx := lib.NewTrace()
-
-
-	//设置trace信息
-	//db = db.SetCtx(traceCtx)
-	if err := db.Exec(createTableSQL).Error; err != nil {
-		db.Rollback()
-		t.Fatal(err)
-	}
-
-	//插入数据
-	t1 := &Test1{Name: "test_name", CreatedAt: time.Now()}
-	if err := db.Save(t1).Error; err != nil {
-		db.Rollback()
-		t.Fatal(err)
-	}
-
-	//查询数据
-	list := []Test1{}
-	if err := db.Where("name=?", "test_name").Find(&list).Error; err != nil {
-		db.Rollback()
-		t.Fatal(err)
-	}
-	fmt.Println(list)
-
-	//删除表数据
-	if err := db.Exec(dropTableSQL).Error; err != nil {
-		db.Rollback()
-		t.Fatal(err)
-	}
-	db.Commit()
-	TearDown()
 }

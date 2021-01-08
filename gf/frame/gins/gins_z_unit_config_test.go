@@ -22,7 +22,7 @@ import (
 
 var (
 	configContent = gfile.GetContents(
-		gdebug.TestDataPath("config", "config.toml"),
+		gdebug.TestDataPath("config", "golibConfig.toml"),
 	)
 )
 
@@ -44,7 +44,7 @@ func Test_Config2(t *testing.T) {
 		t.Assert(err, nil)
 		defer gfile.Remove(dirPath)
 
-		name := "config.toml"
+		name := "golibConfig.toml"
 		err = gfile.PutContents(gfile.Join(dirPath, name), configContent)
 		t.Assert(err, nil)
 
@@ -68,7 +68,7 @@ func Test_Config2(t *testing.T) {
 		t.Assert(err, nil)
 		defer gfile.Remove(dirPath)
 
-		name := "config/config.toml"
+		name := "config/golibConfig.toml"
 		err = gfile.PutContents(gfile.Join(dirPath, name), configContent)
 		t.Assert(err, nil)
 
@@ -140,7 +140,7 @@ func Test_Config4(t *testing.T) {
 	// absolute path
 	gtest.C(t, func(t *gtest.T) {
 		path := fmt.Sprintf(`%s/%d`, gfile.TempDir(), gtime.TimestampNano())
-		file := fmt.Sprintf(`%s/%s`, path, "config.toml")
+		file := fmt.Sprintf(`%s/%s`, path, "golibConfig.toml")
 		err := gfile.PutContents(file, configContent)
 		t.Assert(err, nil)
 		defer gfile.Remove(file)
@@ -155,7 +155,7 @@ func Test_Config4(t *testing.T) {
 
 	gtest.C(t, func(t *gtest.T) {
 		path := fmt.Sprintf(`%s/%d/config`, gfile.TempDir(), gtime.TimestampNano())
-		file := fmt.Sprintf(`%s/%s`, path, "config.toml")
+		file := fmt.Sprintf(`%s/%s`, path, "golibConfig.toml")
 		err := gfile.PutContents(file, configContent)
 		t.Assert(err, nil)
 		defer gfile.Remove(file)

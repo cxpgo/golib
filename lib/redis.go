@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/cxpgo/golib/model"
+	"github.com/cxpgo/golib/model/config"
 	"github.com/gomodule/redigo/redis"
 	"reflect"
 	"time"
@@ -16,7 +16,7 @@ var RedisMapPool map[string]*Redis
 type Redis struct {
 	pool *redis.Pool // Underlying connection pool.
 	//group  string      // Configuration group.
-	config *model.RedisConf // Configuration.
+	config *config.RedisConf // Configuration.
 }
 
 // Redis connection.
@@ -42,20 +42,20 @@ var (
 //pools = gmap.NewStrAnyMap(true)
 )
 
-func InitRedis(configs map[string]*model.RedisConf) {
+func InitRedis(configs map[string]*config.RedisConf) {
 	RedisMapPool = map[string]*Redis{}
 	for confName,conf := range configs{
 		redis := NewRedis(conf)
 		RedisMapPool[confName] = redis
 	}
 	SetDefaultRedis("default")
-	_, err := gRedis.Do("Ping")
+	_, err := GRedis.Do("Ping")
 	if err == nil {
 		Log.Info("===>Redis Init Successful<===")
 	}
 }
 
-func NewRedis(config *model.RedisConf) *Redis {
+func NewRedis(config *config.RedisConf) *Redis {
 
 	if config.MaxIdle == 0 {
 		config.MaxIdle = REDIS_POOL_MAX_IDLE
@@ -124,7 +124,7 @@ func GetRedisByName(name string) *Redis{
 	return RedisMapPool[name]
 }
 func SetDefaultRedis(name string){
-	gRedis = RedisMapPool[name]
+	GRedis = RedisMapPool[name]
 }
 
 func CloseRedis()  {
@@ -206,8 +206,6 @@ func (c *Conn) Do(commandName string, args ...interface{}) (reply interface{}, e
 	return c.do(0, commandName, args...)
 }
 
-// DoWithTimeout sends a command to the server and returns the received reply.
-// The timeout overrides the read timeout set when dialing the connection.
 func (c *Conn) DoWithTimeout(timeout time.Duration, commandName string, args ...interface{}) (reply interface{}, err error) {
 	return c.do(timeout, commandName, args...)
 }

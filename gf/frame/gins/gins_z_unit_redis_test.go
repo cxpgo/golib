@@ -19,7 +19,7 @@ import (
 
 func Test_Redis(t *testing.T) {
 	redisContent := gfile.GetContents(
-		gdebug.TestDataPath("redis", "config.toml"),
+		gdebug.TestDataPath("redis", "golibConfig.toml"),
 	)
 
 	gtest.C(t, func(t *gtest.T) {
@@ -29,7 +29,7 @@ func Test_Redis(t *testing.T) {
 		t.Assert(err, nil)
 		defer gfile.Remove(dirPath)
 
-		name := "config.toml"
+		name := "golibConfig.toml"
 		err = gfile.PutContents(gfile.Join(dirPath, name), redisContent)
 		t.Assert(err, nil)
 

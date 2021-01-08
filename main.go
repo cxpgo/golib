@@ -12,21 +12,4 @@ func main() {
 
 	lib.Init()
 	defer lib.Destroy()
-
-
-	//if err := lib.InitModule("./conf/dev/", []string{"base", "mysql", "redis"}); err != nil {
-	//	log.Fatal(err)
-	//}
-	//defer lib.Destroy()
-	////todo sth
-	//lib.Log.Infow(lib.NewTraceByTag("Main"),lib.Map{"msg":"==>info", })
-	//lib.Log.Error("==>error")
-	//
-	//for{
-	//	time.Sleep(time.Millisecond * 2)
-	//	lib.Log.Error("TestRotateLog")
-	//}
-
-	// stdlib.MainTest()
-
 }

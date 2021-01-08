@@ -5,8 +5,12 @@ import (
 	"crypto/md5"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	jsoniter "github.com/json-iterator/go"
+	"github.com/spf13/viper"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"net"
 	"net/http"
@@ -22,22 +26,6 @@ var DateFormat = "2006-01-02"
 var LocalIP = net.ParseIP("127.0.0.1")
 
 
-//公共初始化函数：支持两种方式设置配置文件
-//
-//函数传入配置文件 Init("./conf/dev/")
-//如果配置文件为空，会从命令行中读取 	  -config conf/dev/
-
-
-
-
-//公共销毁函数
-//func Destroy() {
-//	log.Println("------------------------------------------------------------------------")
-//	log.Printf("[INFO] %s\n", " start destroy resources.")
-//	CloseDB()
-//	Log.Close()
-//	log.Printf("[INFO] %s\n", " success destroy resources.")
-//}
 
 func HttpGET(trace *TraceContext, urlString string, urlParams url.Values, msTimeout int, header http.Header) (*http.Response, []byte, error) {
 	//startTime := time.Now().UnixNano()
@@ -315,4 +303,92 @@ func Substr(str string, start int64, end int64) string {
 	}
 	return string(str[start:end])
 }
+
+// JSONMarshalToString JSON编码为字符串
+func JSONMarshalToString(v interface{}) string {
+	//return ParseParams(v.(map[string]interface{}))
+	log.Printf("vvv====%v" ,v)
+	s, err := jsoniter.MarshalToString(v)
+	log.Println("JSONMarshalToString====" +s)
+	if err != nil {
+		return ""
+	}
+	ss := strings.Replace(s,"\\\"","'",-1)
+	sss := strings.Replace(ss,"\"","'",-1)
+	//log.Println("JSONMarshalToString_old====" +s)
+	log.Println("JSONMarshalToString_new====" +sss)
+
+	return sss
+}
+
+func DisableEscapeHtml(data interface{}) (string, error) {
+	bf := bytes.NewBuffer([]byte{})
+	jsonEncoder := json.NewEncoder(bf)
+	jsonEncoder.SetEscapeHTML(false)
+	if err := jsonEncoder.Encode(data); err != nil {
+		return "", err
+	}
+	return bf.String(), nil
+}
+
+
+var ConfEnvPath string //配置文件夹
+var ConfEnv string     //配置环境名 比如：dev prod test
+
+// 解析配置文件目录
+//
+// 配置文件必须放到一个文件夹中
+// 如：config=conf/dev/base.json 	ConfEnvPath=conf/dev	ConfEnv=dev
+// 如：config=conf/base.json		ConfEnvPath=conf		ConfEnv=conf
+func ParseConfPath(config string) error {
+	path := strings.Split(config, "/")
+	prefix := strings.Join(path[:len(path)-1], "/")
+	ConfEnvPath = prefix
+	ConfEnv = path[len(path)-2]
+	return nil
+}
+
+//获取配置环境名
+func GetConfEnv() string {
+	return ConfEnv
+}
+
+func GetConfPath(fileName string) string {
+	return ConfEnvPath + "/" + fileName + ".toml"
+}
+
+func GetConfFilePath(fileName string) string {
+	return ConfEnvPath + "/" + fileName
+}
+
+//本地解析文件
+func ParseLocalConfig(fileName string, st interface{}) error {
+	path := GetConfFilePath(fileName)
+	err := ParseConfig(path, st)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ParseConfig(path string, conf interface{}) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("Open config %v fail, %v", path, err)
+	}
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		return fmt.Errorf("Read config fail, %v", err)
+	}
+
+	v := viper.New()
+	v.SetConfigType("toml")
+	v.ReadConfig(bytes.NewBuffer(data))
+	if err := v.Unmarshal(conf); err != nil {
+		return fmt.Errorf("Parse config fail, config:%v, err:%v", string(data), err)
+	}
+	return nil
+}
+
+
 

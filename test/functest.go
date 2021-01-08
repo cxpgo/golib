@@ -16,7 +16,7 @@ import (
 
 var (
 	addr       string    = "127.0.0.1:6111"
-	initOnce   sync.Once = sync.Once{}
+	//initOnce   sync.Once = sync.Once{}
 	serverOnce sync.Once = sync.Once{}
 )
 
@@ -96,11 +96,11 @@ func TestPost(t *testing.T) {
 
 //初始化测试用例
 func SetUp() {
-	initOnce.Do(func() {
-		if err := lib.InitModule("../conf/dev/", []string{"base", "mysql", "redis"}); err != nil {
-			log.Fatal(err)
-		}
-	})
+	//initOnce.Do(func() {
+	//	if err := lib.InitModule("../conf/dev/", []string{"base", "mysql", "redis"}); err != nil {
+	//		log.Fatal(err)
+	//	}
+	//})
 }
 
 //销毁测试用例
@@ -139,9 +139,9 @@ func InitTestServer() {
 
 //测试获取配置string
 func TestGetStringConf(t *testing.T) {
-	SetUp()
-	got := lib.GetStringConf("base.log.log_level")
-	if got != "trace" {
-		t.Fatal("got result error")
-	}
+	//SetUp()
+	//got := lib.GetStringConf("base.log.log_level")
+	//if got != "trace" {
+	//	t.Fatal("got result error")
+	//}
 }

@@ -1,7 +1,7 @@
 package lib
 
 import (
-	"github.com/cxpgo/golib/model"
+	"github.com/cxpgo/golib/model/config"
 	"github.com/cxpgo/golib/utils/glog"
 
 	"errors"
@@ -12,7 +12,7 @@ import (
 )
 var GORMMapPool map[string]*gorm.DB
 var GORMDefaultPool *gorm.DB
-func InitGormPool(dbConfList map[string]*model.MySQLConf) error {
+func InitGormPool(dbConfList map[string]*config.MySQLConf) error {
 	//fmt.Printf("gorm %+v",dbConfList)
 	GORMMapPool = map[string]*gorm.DB{}
 	for confName, DbConf := range dbConfList {
@@ -62,9 +62,17 @@ func CloseGorm() {
 	//}
 }
 
-func GetGormPool(name string) (*gorm.DB, error) {
-	if dbpool, ok := GORMMapPool[name]; ok {
+func GetGormPool(name ...string) (*gorm.DB, error) {
+	var realName string
+
+	if len(name)>0{
+		realName = name[0]
+	}else{
+		realName = "default"
+	}
+	if dbpool, ok := GORMMapPool[realName]; ok {
 		return dbpool, nil
 	}
+
 	return nil, errors.New("get pool error")
 }

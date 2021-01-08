@@ -2,7 +2,7 @@ package lib
 
 import (
 	"fmt"
-	"github.com/cxpgo/golib/model"
+	"github.com/cxpgo/golib/model/config"
 	"go.uber.org/zap/zapcore"
 	"time"
 
@@ -26,7 +26,7 @@ type TraceContext struct {
 	CSpanId string
 }
 
-func InitLog(cfg model.Log) {
+func InitLog(cfg config.Log) {
 	//是否开始日志
 	if !cfg.Zap.On {
 		return

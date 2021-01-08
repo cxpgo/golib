@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	DEFAULT_CONFIG_FILE = "config.toml" // The default configuration file name.
+	DEFAULT_CONFIG_FILE = "golibConfig.toml" // The default configuration file name.
 	gCMDENV_KEY         = "gf.gcfg"     // Configuration key for command argument or environment.
 )
 

@@ -1,7 +1,8 @@
-package lib
+package test
 
 import (
 	"fmt"
+	"github.com/cxpgo/golib/lib"
 	"testing"
 	"time"
 )
@@ -22,9 +23,9 @@ var (
 
 func Test_GORM(t *testing.T) {
 	testInitOnce()
-	InitGormPool(gConfig.MySqlConfList)
+	lib.InitGormPool(lib.GConfig.MySqlConfList)
 	//获取链接池
-	dbpool, err := GetGormPool("default")
+	dbpool, err := lib.GetGormPool("default")
 	if err != nil {
 		t.Fatal(err)
 	}

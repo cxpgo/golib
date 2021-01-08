@@ -5,7 +5,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
-	"github.com/cxpgo/golib/model"
+	"github.com/cxpgo/golib/model/config"
 	"go.uber.org/zap"
 	"reflect"
 	"regexp"
@@ -19,7 +19,7 @@ import (
 var DBMapPool map[string]*sql.DB
 var DBDefaultPool *sql.DB
 
-func InitDBPool(dbConfList map[string]*model.MySQLConf) error {
+func InitDBPool(dbConfList map[string]*config.MySQLConf) error {
 	DBMapPool = map[string]*sql.DB{}
 
 	for confName, DbConf := range dbConfList {
@@ -51,7 +51,7 @@ func InitDBPool(dbConfList map[string]*model.MySQLConf) error {
 	return nil
 }
 
-func getDataSourceNameByConfig(dbConf *model.MySQLConf) string {
+func getDataSourceNameByConfig(dbConf *config.MySQLConf) string {
 	//"root:root3@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=true&loc=Local"
 	//var build strings.Builder
 	//build.WriteString(dbConf.UserName)
