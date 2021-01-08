@@ -16,7 +16,7 @@ func InitGolibConfig(path ...string) *viper.Viper {
 	//GConfig = &configPath.Config{}
 	var configPath string
 	if len(path) == 0 {
-		flag.StringVar(&configPath, "c", "", "choose configPath file.")
+		flag.StringVar(&configPath, "config", "", "choose configPath file.ps:'./config/dev/golibConfig.toml'")
 		flag.Parse()
 		if configPath == "" { // 优先级: 命令行 > 环境变量 > 默认值
 			if configEnv := os.Getenv(DefaultConfigEnv); configEnv == "" {

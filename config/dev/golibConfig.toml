@@ -1,10 +1,7 @@
 #golib config
 [system]
-    env= "public"       # Change to "develop" to skip authentication for development mode
+    env= "dev"       # pro dev oa local
     addr=8888
-    oss-type="local"
-    use-multipoint=false   #多点登录
-
 
 [log]
     [log.rotate]           #lumberjack 日志文件滚动配置

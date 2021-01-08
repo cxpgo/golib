@@ -10,8 +10,9 @@ import (
 	"gorm.io/gorm/logger"
 	"time"
 )
+
 var GORMMapPool map[string]*gorm.DB
-var GORMDefaultPool *gorm.DB
+
 func InitGormPool(dbConfList map[string]*config.MySQLConf) error {
 	//fmt.Printf("gorm %+v",dbConfList)
 	GORMMapPool = map[string]*gorm.DB{}
@@ -49,10 +50,10 @@ func InitGormPool(dbConfList map[string]*config.MySQLConf) error {
 	}
 
 	if dbpool, err := GetGormPool("default"); err == nil {
-		GORMDefaultPool = dbpool
+		GGorm = dbpool
 	}
 
-	Log.Info("===>Gorm Init Successful<===")
+	Log.Info("===>GGorm Init Successful<===")
 
 	return nil
 }
@@ -65,9 +66,9 @@ func CloseGorm() {
 func GetGormPool(name ...string) (*gorm.DB, error) {
 	var realName string
 
-	if len(name)>0{
+	if len(name) > 0 {
 		realName = name[0]
-	}else{
+	} else {
 		realName = "default"
 	}
 	if dbpool, ok := GORMMapPool[realName]; ok {

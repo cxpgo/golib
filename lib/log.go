@@ -116,7 +116,7 @@ func InitLog(cfg config.Log) {
 	zapSugarLog.Info("===>Log Init Successful<===")
 }
 
-var Log *golibLog
+
 type golibLog struct {
 }
 

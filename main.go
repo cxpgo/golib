@@ -10,6 +10,6 @@ import (
 func main() {
 	fmt.Println("\n	欢迎使用 Golib	当前版本:V1.0.5\n ")
 
-	lib.Init()
+	lib.InitAll()
 	defer lib.Destroy()
 }

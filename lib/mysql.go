@@ -17,7 +17,6 @@ import (
 )
 
 var DBMapPool map[string]*sql.DB
-var DBDefaultPool *sql.DB
 
 func InitDBPool(dbConfList map[string]*config.MySQLConf) error {
 	DBMapPool = map[string]*sql.DB{}
@@ -45,7 +44,7 @@ func InitDBPool(dbConfList map[string]*config.MySQLConf) error {
 	}
 
 	if dbpool, err := GetGormPool("default"); err == nil {
-		GORMDefaultPool = dbpool
+		GGorm = dbpool
 	}
 	Log.Info("===>Mysql Init Successful<===")
 	return nil

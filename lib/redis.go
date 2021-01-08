@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-
 var RedisMapPool map[string]*Redis
+
 // Redis client.
 type Redis struct {
 	pool *redis.Pool // Underlying connection pool.
@@ -44,7 +44,7 @@ var (
 
 func InitRedis(configs map[string]*config.RedisConf) {
 	RedisMapPool = map[string]*Redis{}
-	for confName,conf := range configs{
+	for confName, conf := range configs {
 		redis := NewRedis(conf)
 		RedisMapPool[confName] = redis
 	}
@@ -120,18 +120,19 @@ func NewRedis(config *config.RedisConf) *Redis {
 
 }
 
-func GetRedisByName(name string) *Redis{
+func GetRedisByName(name string) *Redis {
 	return RedisMapPool[name]
 }
-func SetDefaultRedis(name string){
+func SetDefaultRedis(name string) {
 	GRedis = RedisMapPool[name]
 }
 
-func CloseRedis()  {
-	for _,redisPool := range RedisMapPool{
+func CloseRedis() {
+	for _, redisPool := range RedisMapPool {
 		redisPool.Close()
 	}
 }
+
 // Do sends a command to the server and returns the received reply.
 // Do automatically get a connection from pool, and close it when the reply received.
 // It does not really "close" the connection, but drops it back to the connection pool.
@@ -209,5 +210,3 @@ func (c *Conn) Do(commandName string, args ...interface{}) (reply interface{}, e
 func (c *Conn) DoWithTimeout(timeout time.Duration, commandName string, args ...interface{}) (reply interface{}, err error) {
 	return c.do(timeout, commandName, args...)
 }
-
-
