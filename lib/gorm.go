@@ -17,7 +17,7 @@ func InitGormPool(dbConfList map[string]*config.MySQLConf) error {
 	//fmt.Printf("gorm %+v",dbConfList)
 	GORMMapPool = map[string]*gorm.DB{}
 	for confName, DbConf := range dbConfList {
-		dataSourceName := getDataSourceNameByConfig(DbConf)
+		dataSourceName := GetDataSourcePathByConfig(DbConf)
 
 		newLogger := glog.GormLogNew(
 			Log, // io writer

@@ -36,6 +36,7 @@
         username= 'root'
         password= 'Cxp!@#123'
         db_name= 'football'
+        db_type="mysql"
         max_open_conn = 200         #最大连接数
         max_idle_conn = 20         #空闲连接数
         max_conn_life_time = 30    #连接超时

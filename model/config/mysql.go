@@ -7,6 +7,7 @@ type MySQLConf struct {
 	UserName        string `mapstructure:"username"`
 	Password        string `mapstructure:"password"`
 	DbName          string `mapstructure:"db_name"`
+	DbType          string `mapstructure:"db_type"`
 	MaxOpenConn     int    `mapstructure:"max_open_conn"`
 	MaxIdleConn     int    `mapstructure:"max_idle_conn"`
 	MaxConnLifeTime int    `mapstructure:"max_conn_life_time"`

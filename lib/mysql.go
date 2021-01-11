@@ -23,7 +23,7 @@ func InitDBPool(dbConfList map[string]*config.MySQLConf) error {
 
 	for confName, DbConf := range dbConfList {
 		//
-		dataSourceName := getDataSourceNameByConfig(DbConf)
+		dataSourceName := GetDataSourcePathByConfig(DbConf)
 		dbpool, err := sql.Open("mysql", dataSourceName)
 		if err != nil {
 			Log.Errorw(map[string]interface{}{"err": err,}, NewTrace())
@@ -49,8 +49,8 @@ func InitDBPool(dbConfList map[string]*config.MySQLConf) error {
 	Log.Info("===>Mysql Init Successful<===")
 	return nil
 }
-
-func getDataSourceNameByConfig(dbConf *config.MySQLConf) string {
+//default  return default config
+func GetDataSourcePathByConfig(dbConf *config.MySQLConf) string {
 	//"root:root3@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=true&loc=Local"
 	//var build strings.Builder
 	//build.WriteString(dbConf.UserName)
@@ -64,6 +64,9 @@ func getDataSourceNameByConfig(dbConf *config.MySQLConf) string {
 	//build.WriteString(dbConf.Config)
 	//str := build.String()
 	//str := dbConf.UserName + ":" + dbConf.Password + "@tcp(" + dbConf.Host + ")/" + dbConf.DbName + "?" + dbConf.Config
+	if dbConf == nil{
+		dbConf = GConfig.MySqlConfList["default"]
+	}
 	str := fmt.Sprintf("%s:%s@tcp(%s)/%s?%s", dbConf.UserName, dbConf.Password, dbConf.Host, dbConf.DbName, dbConf.Config)
 	return str
 }
