@@ -4,6 +4,7 @@ type Log struct {
 	Zap    ZapConfig
 	Rotate RotateFileConf
 }
+
 //ZAP 日志配置
 type ZapConfig struct {
 	On            bool   `mapstructure:"on"`
@@ -18,6 +19,7 @@ type ZapConfig struct {
 	CallerKey     string `mapstructure:"caller_key"`
 	MessageKey    string `mapstructure:"message_key"`
 	StacktraceKey string `mapstructure:"stack_trace_key"`
+	SqlLogLever   int `mapstructure:"sql_log_lever"`
 }
 
 //文件转储配置

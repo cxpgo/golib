@@ -1,7 +1,12 @@
 #golib config
 [system]
     env= "dev"       # pro dev oa local
-    addr=8888
+[http]
+    post=8888
+    gin_modle="debug" # debug,release,test
+    read_timeout = 10   #second
+    write_timeout = 10  #second
+    max_header_bytes = 20 # 1<<20
 
 [log]
     [log.rotate]           #lumberjack 日志文件滚动配置
@@ -26,6 +31,7 @@
         caller_key = "linenum"
         message_key = "msg"
         stack_trace_key = "traceid"
+        sql_log_lever = 2 #(1,2,3,4)(Silent,Error,Warn,Info)
 
 [mysql]
     [mysql.default]

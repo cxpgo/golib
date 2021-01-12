@@ -3,6 +3,7 @@ package lib
 import (
 	"github.com/cxpgo/golib/model/config"
 	"github.com/cxpgo/golib/utils/glog"
+	"gorm.io/gorm/schema"
 
 	"errors"
 	"gorm.io/driver/mysql"
@@ -16,19 +17,25 @@ var GORMMapPool map[string]*gorm.DB
 func InitGormPool(dbConfList map[string]*config.MySQLConf) error {
 	//fmt.Printf("gorm %+v",dbConfList)
 	GORMMapPool = map[string]*gorm.DB{}
+
 	for confName, DbConf := range dbConfList {
 		dataSourceName := GetDataSourcePathByConfig(DbConf)
-
 		newLogger := glog.GormLogNew(
 			Log, // io writer
 			glog.Config{
-				SlowThreshold: time.Second, // Slow SQL threshold
-				LogLevel:      logger.Info, // Log level
-				Colorful:      false,       // Disable color
+				SlowThreshold: time.Second,                                  // Slow SQL threshold
+				LogLevel:      logger.LogLevel(GConfig.Log.Zap.SqlLogLever), // Log level
+				Colorful:      false,                                        // Disable color
 			},
 		)
 
-		dbgorm, err := gorm.Open(mysql.Open(dataSourceName), &gorm.Config{Logger: newLogger, DisableForeignKeyConstraintWhenMigrating: true,})
+		dbgorm, err := gorm.Open(mysql.Open(dataSourceName), &gorm.Config{
+			Logger: newLogger,
+			NamingStrategy: schema.NamingStrategy{
+				TablePrefix: "",   // 表名前缀，`Article` 的表名应该是 `it_articles`
+				SingularTable: true, // 使用单数表名，启用该选项，此时，`Article` 的表名应该是 `it_article`
+			},
+			DisableForeignKeyConstraintWhenMigrating: true,})
 		if err != nil {
 			return err
 		}
@@ -77,3 +84,4 @@ func GetGormPool(name ...string) (*gorm.DB, error) {
 
 	return nil, errors.New("get pool error")
 }
+

@@ -3,6 +3,8 @@ package test
 import (
 	"fmt"
 	"github.com/cxpgo/golib/lib"
+	"github.com/cxpgo/golib/model/config"
+	"github.com/prometheus/common/log"
 	"testing"
 	"time"
 )
@@ -85,4 +87,18 @@ func Test_GORM(t *testing.T) {
 	db.Commit()
 
 	//Close()
+}
+
+func Test_initDbTable(t *testing.T){
+	testInitOnce()
+	lib.InitGormPool(lib.GConfig.MySqlConfList)
+	//获取链接池
+	dbpool, _ := lib.GetGormPool("default")
+	err := dbpool.AutoMigrate(
+		config.Http{},
+		config.System{},
+		)
+	if err != nil {
+		log.Errorf("register table failed:%v",  err)
+	}
 }

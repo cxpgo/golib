@@ -14,6 +14,7 @@ require (
 	github.com/grokify/html-strip-tags-go v0.0.0-20190921062105-daaa06bf1aaf
 	github.com/json-iterator/go v1.1.10
 	github.com/olekukonko/tablewriter v0.0.4
+	github.com/prometheus/common v0.4.0
 	github.com/spf13/viper v1.4.0
 	github.com/stretchr/testify v1.5.1 // indirect
 	go.uber.org/zap v1.10.0
