@@ -31,7 +31,7 @@
         caller_key = "linenum"
         message_key = "msg"
         stack_trace_key = "traceid"
-        sql_log_lever = 2 #(1,2,3,4)(Silent,Error,Warn,Info)
+
 
 [mysql]
     [mysql.default]
@@ -46,6 +46,10 @@
         max_open_conn = 200         #最大连接数
         max_idle_conn = 20         #空闲连接数
         max_conn_life_time = 30    #连接超时
+[gorm]
+    table_prefix=""         #表名前缀
+    singular_table=false     #是否使用单数表名
+    sql_log_lever = 2 #(1,2,3,4)(Silent,Error,Warn,Info) gorm 日志级别
 
 [redis]
     [redis.default]

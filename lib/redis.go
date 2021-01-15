@@ -133,17 +133,43 @@ func CloseRedis() {
 	}
 }
 
-// Do sends a command to the server and returns the received reply.
-// Do automatically get a connection from pool, and close it when the reply received.
-// It does not really "close" the connection, but drops it back to the connection pool.
+func (r *Redis) DoString(commandName string, args ...interface{}) (string, error) {
+	return redis.String(r.Do(commandName, args...))
+}
+
+func (r *Redis) DoInt(commandName string, args ...interface{}) (int, error) {
+	return redis.Int(r.Do(commandName, args...))
+}
+func (r *Redis) DoInt64(commandName string, args ...interface{}) (int64, error) {
+	return redis.Int64(r.Do(commandName, args...))
+}
+
+func (r *Redis) DoBool(commandName string, args ...interface{}) (bool, error) {
+	return redis.Bool(r.Do(commandName, args...))
+}
+
+func (r *Redis) DoBytes(commandName string, args ...interface{}) ([]byte, error) {
+	return redis.Bytes(r.Do(commandName, args...))
+}
+
+func (r *Redis) DoFloat64(commandName string, args ...interface{}) (float64, error) {
+	return redis.Float64(r.Do(commandName, args...))
+}
+
+func (r *Redis) DoStringMap(commandName string, args ...interface{}) (map[string]string, error) {
+	return redis.StringMap(r.Do(commandName, args...))
+}
+
+func (r *Redis) DoValues(commandName string, args ...interface{}) ([]interface{}, error) {
+	return redis.Values(r.Do(commandName, args...))
+}
+
 func (r *Redis) Do(commandName string, args ...interface{}) (interface{}, error) {
 	conn := &Conn{r.pool.Get()}
 	defer conn.Close()
 	return conn.Do(commandName, args...)
 }
 
-// DoWithTimeout sends a command to the server and returns the received reply.
-// The timeout overrides the read timeout set when dialing the connection.
 func (r *Redis) DoWithTimeout(timeout time.Duration, commandName string, args ...interface{}) (interface{}, error) {
 	conn := &Conn{r.pool.Get()}
 	defer conn.Close()

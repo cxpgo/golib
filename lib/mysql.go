@@ -67,7 +67,8 @@ func GetDataSourcePathByConfig(dbConf *config.MySQLConf) string {
 	if dbConf == nil{
 		dbConf = GConfig.MySqlConfList["default"]
 	}
-	str := fmt.Sprintf("%s:%s@tcp(%s)/%s?%s", dbConf.UserName, dbConf.Password, dbConf.Host, dbConf.DbName, dbConf.Config)
+	//fmt.Printf("dbConf=%+v\n",dbConf)
+	str := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?%s", dbConf.UserName, dbConf.Password, dbConf.Host,dbConf.Port, dbConf.DbName, dbConf.Config)
 	return str
 }
 
